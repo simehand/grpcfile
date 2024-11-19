@@ -23,6 +23,19 @@
 
     <dependency>
       <groupId>io.grpc</groupId>
+      <artifactId>grpc-services</artifactId>
+      <version>1.68.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <scope>runtime</scope>
+      <version>1.68.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.grpc</groupId>
       <artifactId>grpc-netty-shaded</artifactId>
       <version>1.68.1</version>
       <scope>runtime</scope>
@@ -37,15 +50,35 @@
       <artifactId>grpc-stub</artifactId>
       <version>1.68.1</version>
     </dependency>
+   <dependency> <!-- Use newer version than in protobuf-java-util -->
+      <groupId>com.google.j2objc</groupId>
+      <artifactId>j2objc-annotations</artifactId>
+      <version>3.0.0</version>
+    </dependency>
     <dependency> <!-- necessary for Java 9+ -->
       <groupId>org.apache.tomcat</groupId>
       <artifactId>annotations-api</artifactId>
       <version>6.0.53</version>
       <scope>provided</scope>
     </dependency>
-  </dependencies>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-grpclb</artifactId>
+      <version>1.68.1</version>
+  </dependency>
+  <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-core</artifactId>
+      <version>1.68.1</version>
+  </dependency>
 
-  <build>
+
+  </dependencies>  
+
+
+
+
+<build>
   <extensions>
     <extension>
       <groupId>kr.motd.maven</groupId>
@@ -64,13 +97,68 @@
         <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.68.1:exe:${os.detected.classifier}</pluginArtifact>
       </configuration>
       <executions>
-        <execution>
-          <goals>
-            <goal>compile</goal>  
-            <goal>compile-custom</goal> 
+        <execution>  
+          <goals>  
+            <goal>compile</goal> 
+            <goal>compile-custom</goal>  
           </goals>
-        </execution>
-      </executions>   
+        </execution> 
+      </executions> 
+    </plugin> 
+   
+ <plugin>
+      <artifactId>maven-assembly-plugin</artifactId>
+      <version>2.4</version>
+      <executions>
+          <execution>
+              <id>build-publisher-client</id>
+              <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <archive>
+                      <manifest>
+                          <mainClass>com.thalesgroup.grpctest.FileTransferClient</mainClass>
+                      </manifest>
+                  </archive>
+                  <descriptorRefs>
+                      <descriptorRef>jar-with-dependencies</descriptorRef>
+                  </descriptorRefs>
+                  <finalName>clientjar</finalName>
+                  <transformers>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                  </transformers>
+              </configuration>
+              <phase>package</phase> 
+              <goals>
+                  <goal>single</goal>
+              </goals> 
+            
+          </execution>
+
+          <execution>
+              <id>build-publisher-server</id>
+              <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <archive>
+                      <manifest>
+                          <mainClass>com.thalesgroup.grpctest.FileTransferServer</mainClass>
+                      </manifest>
+                  </archive>
+                  <descriptorRefs>
+                      <descriptorRef>jar-with-dependencies</descriptorRef>
+                  </descriptorRefs>
+                  <finalName>serverjar</finalName>
+                   <transformers> 
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                  </transformers>
+              </configuration> 
+              <phase>package</phase>
+              <goals>
+                  <goal>single</goal>
+              </goals>
+          </execution>
+        </executions>
+           
+      
     </plugin>
   </plugins>
 </build>
