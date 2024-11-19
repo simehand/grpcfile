@@ -1,8 +1,9 @@
 Instructions:
 
-1- Build the jar file by running 
-    mvn clean install 
-
+1- Build the jar packages by running 
+    mvn clean install
+    
+    Once the maven build is fully complete check the /target directory to check if the client.jar and server.jar have been fully built. 
 2- start by running a server with:
     java -jar server.jar 
  
